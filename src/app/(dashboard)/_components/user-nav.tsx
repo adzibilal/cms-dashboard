@@ -1,8 +1,5 @@
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage
-} from '@/components/ui/avatar'
+'use client'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -14,8 +11,48 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { getSession, login, logout } from '@/lib/auth'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+
+interface UserData {
+    id: string
+    email: string
+    username: string
+    name: string | null
+    avatar: string | null
+    role: string
+}
 
 export function UserNav() {
+    const [userData, setUserData] = useState<UserData | null>(null) // Use UserData type
+    const router = useRouter()
+
+    useEffect(() => {
+        async function fetchUserData() {
+            const session = await getSession()
+            console.error(session)
+            if (session) {
+                const userDataFromSession: UserData = {
+                    id: session.credentialsData.id,
+                    email: session.credentialsData.email,
+                    username: session.credentialsData.username,
+                    name: session.credentialsData.name,
+                    avatar: session.credentialsData.avatar,
+                    role: session.credentialsData.role
+                }
+                setUserData(userDataFromSession)
+            }
+        }
+
+        fetchUserData()
+    }, [])
+
+    const handleLogout = async () => {
+        await logout()
+        router.push('/login')
+    }
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -32,31 +69,19 @@ export function UserNav() {
                 <DropdownMenuLabel className='font-normal'>
                     <div className='flex flex-col space-y-1'>
                         <p className='text-sm font-medium leading-none'>
-                            shadcn
+                            {userData ? userData.username : ''}
                         </p>
                         <p className='text-xs leading-none text-muted-foreground'>
-                            m@example.com
+                            {userData ? userData.email : ''}
                         </p>
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        Profile
-                        <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        Billing
-                        <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        Settings
-                        <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>New Team</DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                    onClick={async () => {
+                        await logout()
+                        router.push('/login')
+                    }}>
                     Log out
                     <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                 </DropdownMenuItem>

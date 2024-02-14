@@ -8,34 +8,57 @@ import { Icons } from '@/components/icons'
 import { toast } from 'sonner'
 import { redirect, useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
-import { useState } from 'react'
+import { FormEvent, useState } from 'react'
+import { login } from '@/lib/auth'
+import { NextApiResponse } from 'next'
 
 interface LoginAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function LoginAuthForm({ className, ...props }: LoginAuthFormProps) {
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState(false)
     const [data, setData] = useState({
-        username: 'adzibilal',
-        password: 'Admin100922'
+        username: '',
+        password: ''
     })
+
     const router = useRouter()
 
-    async function onSubmit(event: React.SyntheticEvent) {
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target
+        setData({
+            ...data,
+            [name]: value
+        })
+    }
+
+    const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         setIsLoading(true)
 
-        const res = await signIn('credentials', {
-            ...data,
-            redirect: false
-        })
-
-        if (res?.ok) {
-            toast('Login success', {
-                icon: '✅',
-                position: 'top-center'
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
             })
-            router.push('/dashboard')
-        } else {
+
+            if (response.ok) {
+                const responseData = await response.json()
+                await login(responseData)
+                toast('Login success', {
+                    icon: '✅',
+                    position: 'top-center'
+                })
+                router.push('/dashboard')
+            } else {
+                // Jika gagal, tangani kesalahan
+                const errorData = await response.json()
+                throw new Error(errorData.message || 'Login failed')
+            }
+        } catch (error) {
+            console.error(error)
             toast('Username or Password is wrong', {
                 icon: '❌',
                 position: 'top-center'
@@ -55,6 +78,9 @@ export function LoginAuthForm({ className, ...props }: LoginAuthFormProps) {
                         </Label>
                         <Input
                             id='username'
+                            name='username' // Added name attribute
+                            value={data.username}
+                            onChange={handleInputChange} // Added onChange handler
                             placeholder='Enter your Username'
                             type='text'
                             autoCapitalize='none'
@@ -69,6 +95,9 @@ export function LoginAuthForm({ className, ...props }: LoginAuthFormProps) {
                         </Label>
                         <Input
                             id='password'
+                            name='password' // Added name attribute
+                            value={data.password}
+                            onChange={handleInputChange} // Added onChange handler
                             placeholder='Enter your password'
                             type='password'
                             autoCapitalize='none'

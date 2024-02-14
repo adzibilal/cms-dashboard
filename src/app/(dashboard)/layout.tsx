@@ -1,4 +1,5 @@
 import Navbar from './_components/navbar'
+import SessionChecker from './_components/session-cheker'
 import Sidebar from './_components/sidebar'
 
 export default function DashboardLayout({
