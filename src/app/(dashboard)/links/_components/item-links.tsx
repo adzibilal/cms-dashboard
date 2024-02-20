@@ -80,7 +80,7 @@ const ItemLinks = ({
 
     return (
         <Card className={`mb-3 ${!active ? 'opacity-50' : ''}`}>
-            <div className='flex p-3 items-center gap-3 relative'>
+            <div className='flex p-3 items-center gap-3 relative max-md:flex-col max-md:items-start'>
                 {image && (
                     <Image
                         className='bg-muted rounded-md w-16 h-16'
@@ -94,7 +94,7 @@ const ItemLinks = ({
                     <div className=''>{title}</div>
                     <div className=''>{link}</div>
                 </div>
-                <div className='absolute right-5 flex gap-3 items-center'>
+                <div className='md:absolute right-5 flex gap-3 items-center'>
                     <div
                         onClick={toggleActiveLink}
                         className='bg-muted text-xl p-2 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:opacity-90'>

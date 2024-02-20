@@ -41,7 +41,8 @@ const LinksPage = () => {
                     <div className=''>
                         <div className='text-3xl'>Links Management</div>
                         <div className='text-muted-foreground'>
-                            Lorem Ipsum dolor sit amet.
+                            Manage your links here. You can add, edit, and
+                            delete links.
                         </div>
                     </div>
                     <AddLinks onSuccess={refreshLinks} />
