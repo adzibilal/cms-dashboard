@@ -8,8 +8,10 @@ export default function DashboardLayout({
     children: React.ReactNode
 }>) {
     return (
-        <div className='grid grid-cols-[220px_1fr] min-h-screen'>
-            <Sidebar />
+        <div className='grid grid-cols-[220px_1fr] min-h-screen max-md:grid-cols-1'>
+            <div className='max-md:hidden'>
+                <Sidebar />
+            </div>
             <div className=''>
                 <Navbar />
                 <div className='p-5'>{children}</div>

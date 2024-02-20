@@ -30,7 +30,7 @@ const Sidebar = () => {
     const pathname = usePathname()
 
     return (
-        <div className='border-r h-full p-5'>
+        <div className='md:border-r h-full md:p-5'>
             <Image
                 width={50}
                 height={50}

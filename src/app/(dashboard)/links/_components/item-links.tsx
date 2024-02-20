@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card } from '@/components/ui/card'
 import Image from 'next/image'
-import { BsEye, BsEyeSlash, BsTrash } from 'react-icons/bs'
+import { BsEye, BsEyeSlash, BsTrash, BsPencil } from 'react-icons/bs'
 import { Links } from '@prisma/client'
 import {
     Tooltip,
@@ -11,7 +11,13 @@ import {
 } from '@/components/ui/tooltip'
 import { toast } from 'sonner'
 
-const ItemLinks = ({links, onSuccess }: { links: Links & { image: string | null } | any  ,onSuccess: () => void }) => {
+const ItemLinks = ({
+    links,
+    onSuccess
+}: {
+    links: (Links & { image: string | null }) | any
+    onSuccess: () => void
+}) => {
     const { id, title, link, active, important, image } = links
 
     const toggleActiveLink = async () => {
@@ -30,7 +36,7 @@ const ItemLinks = ({links, onSuccess }: { links: Links & { image: string | null 
                     icon: '✅',
                     position: 'bottom-right'
                 })
-                onSuccess(); 
+                onSuccess()
             } else {
                 const errorData = await response.json()
                 throw new Error(errorData.message || 'Failed to update link')
@@ -45,6 +51,8 @@ const ItemLinks = ({links, onSuccess }: { links: Links & { image: string | null 
     }
 
     const deleteLink = async () => {
+        const confirm = window.confirm('Are you sure you want to delete this link?')
+        if (!confirm) return
         try {
             const response = await fetch(`/api/links/${id}`, {
                 method: 'DELETE'
@@ -56,7 +64,7 @@ const ItemLinks = ({links, onSuccess }: { links: Links & { image: string | null 
                     icon: '✅',
                     position: 'bottom-right'
                 })
-                onSuccess();
+                onSuccess()
             } else {
                 const errorData = await response.json()
                 throw new Error(errorData.message || 'Failed to delete link')
@@ -87,7 +95,9 @@ const ItemLinks = ({links, onSuccess }: { links: Links & { image: string | null 
                     <div className=''>{link}</div>
                 </div>
                 <div className='absolute right-5 flex gap-3 items-center'>
-                    <div onClick={toggleActiveLink} className='bg-muted text-xl p-2 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:opacity-90'>
+                    <div
+                        onClick={toggleActiveLink}
+                        className='bg-muted text-xl p-2 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:opacity-90'>
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger>
@@ -99,7 +109,14 @@ const ItemLinks = ({links, onSuccess }: { links: Links & { image: string | null 
                             </Tooltip>
                         </TooltipProvider>
                     </div>
-                    <div onClick={deleteLink} className='bg-muted text-xl p-2 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:opacity-90'>
+                    <div
+                        onClick={deleteLink}
+                        className='bg-muted text-xl p-2 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:opacity-90'>
+                        <BsPencil />
+                    </div>
+                    <div
+                        onClick={deleteLink}
+                        className='bg-muted text-xl p-2 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:opacity-90'>
                         <BsTrash />
                     </div>
                 </div>

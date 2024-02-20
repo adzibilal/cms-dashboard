@@ -16,6 +16,8 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
+//@ts-ignore
+import { CloudinaryContext, Image } from 'cloudinary-react'
 
 const AddLinks = ({ onSuccess }: { onSuccess: () => void }) => {
     const [open, setOpen] = useState(false)
@@ -26,6 +28,17 @@ const AddLinks = ({ onSuccess }: { onSuccess: () => void }) => {
         important: false,
         active: true
     })
+    const [imageUrl, setImageUrl] = useState('')
+
+    const clearForm = () => {
+        setData({
+            title: '',
+            link: '',
+            important: false,
+            active: true
+        })
+        setImageUrl('')
+    }
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -39,13 +52,18 @@ const AddLinks = ({ onSuccess }: { onSuccess: () => void }) => {
     const submitLink = async () => {
         setIsLoading(true)
 
+        const payload = {
+            ...data,
+            image: imageUrl
+        }
+
         try {
             const response = await fetch('/api/links', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(payload)
             })
 
             if (response.ok) {
@@ -55,7 +73,8 @@ const AddLinks = ({ onSuccess }: { onSuccess: () => void }) => {
                     position: 'top-center'
                 })
                 setOpen(false)
-                onSuccess(); 
+                clearForm()
+                onSuccess()
             } else {
                 const errorData = await response.json()
                 throw new Error(errorData.message || 'Failed to add link')
@@ -71,6 +90,40 @@ const AddLinks = ({ onSuccess }: { onSuccess: () => void }) => {
         setIsLoading(false)
     }
 
+    const handleImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files && e.target.files[0]
+        if (!file) {
+            return
+        }
+
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('upload_preset', 'ml_default')
+
+        try {
+            const response = await fetch(
+                'https://api.cloudinary.com/v1_1/dfzjkdczw/image/upload',
+                {
+                    method: 'POST',
+                    body: formData
+                }
+            )
+
+            if (response.ok) {
+                const data = await response.json()
+                setImageUrl(data.secure_url)
+            } else {
+                throw new Error('Failed to upload image')
+            }
+        } catch (error) {
+            console.error(error)
+            toast('Failed to upload image', {
+                icon: '❌',
+                position: 'top-center'
+            })
+        }
+    }
+
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
@@ -80,6 +133,23 @@ const AddLinks = ({ onSuccess }: { onSuccess: () => void }) => {
                 <AlertDialogHeader>
                     <AlertDialogTitle>Add New Link</AlertDialogTitle>
                     <AlertDialogDescription>
+                        {imageUrl && (
+                            <Image
+                                width={150}
+                                height={150}
+                                alt=''
+                                src={imageUrl}
+                                className='aspect-square rounded-md object-cover'
+                            />
+                        )}
+                        <div className='grid w-full max-w-sm items-center gap-1.5 mb-2 mt-2'>
+                            <Label htmlFor='picture'>Picture</Label>
+                            <Input
+                                onChange={handleImgChange}
+                                id='picture'
+                                type='file'
+                            />
+                        </div>
                         <div className='grid w-full items-center gap-2 mb-2'>
                             <Label className='!text-left' htmlFor='title'>
                                 Title
