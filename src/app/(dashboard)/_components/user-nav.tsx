@@ -12,6 +12,7 @@ import {
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { getSession, login, logout } from '@/lib/auth'
+import { avaUsername } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -61,7 +62,7 @@ export function UserNav() {
                     className='relative h-10 w-10 rounded-full'>
                     <Avatar className='h-10 w-10'>
                         <AvatarImage src='/avatars/01.png' alt='@shadcn' />
-                        <AvatarFallback>SC</AvatarFallback>
+                        <AvatarFallback className='uppercase'>{ userData ? avaUsername(userData?.username) : '' }</AvatarFallback>
                     </Avatar>
                 </Button>
             </DropdownMenuTrigger>
