@@ -4,6 +4,7 @@ import ItemLinks from './_components/item-links'
 import { Links } from '@prisma/client'
 import AddLinks from './_components/add-links'
 import SkeletonLinkList from './_components/skeleton-list'
+import PreviewLinks from './_components/preview-links'
 
 const LinksPage = () => {
     const [loading, setLoading] = useState(true)
@@ -35,7 +36,7 @@ const LinksPage = () => {
     }, [])
 
     return (
-        <div className='grid grid-cols-2 gap-3 max-md:grid-cols-1'>
+        <div className='grid grid-cols-2 gap-10 max-md:grid-cols-1'>
             <div className=''>
                 <div className='pb-5 flex items-center justify-between gap-3'>
                     <div className=''>
@@ -68,7 +69,17 @@ const LinksPage = () => {
                     )}
                 </div>
             </div>
-            <div className=''></div>
+            <div className=''>
+                <div className='pb-5 flex items-center justify-center text-center gap-3'>
+                    <div className=''>
+                        <div className='text-3xl'>Preview Links</div>
+                        <div className='text-muted-foreground'>
+                            Here are some links you can preview.
+                        </div>
+                    </div>
+                </div>
+                <PreviewLinks links={links} />
+            </div>
         </div>
     )
 }
