@@ -10,6 +10,7 @@ import {
     TooltipTrigger
 } from '@/components/ui/tooltip'
 import { toast } from 'sonner'
+import EditLinks from './edit-links'
 
 const ItemLinks = ({
     links,
@@ -109,11 +110,7 @@ const ItemLinks = ({
                             </Tooltip>
                         </TooltipProvider>
                     </div>
-                    <div
-                        onClick={deleteLink}
-                        className='bg-muted text-xl p-2 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:opacity-90'>
-                        <BsPencil />
-                    </div>
+                    <EditLinks onSuccess={onSuccess} links={links}/>
                     <div
                         onClick={deleteLink}
                         className='bg-muted text-xl p-2 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:opacity-90'>
