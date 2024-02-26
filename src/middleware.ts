@@ -15,6 +15,10 @@ const middleware = async (request: NextRequest) => {
     )
         return NextResponse.next()
 
+    if (pathname === '/') {
+        return NextResponse.rewrite(new URL('/login', request.url))
+    }
+
     // Memeriksa apakah kuki sesi ada
     const sessionCookie = request.cookies.get('session')
 
